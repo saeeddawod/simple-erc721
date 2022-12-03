@@ -6,7 +6,7 @@
 
 4- run the command "node merkeleTree.js"
 
-5- past the roothash into the setWhiteListMerkelRoot
+5- paste the roothash into the setWhiteListMerkelRoot in the contract (after verifing it on etherscan)
 
 
 
