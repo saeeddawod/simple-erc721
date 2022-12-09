@@ -17,6 +17,7 @@ contract NFT is ERC721Enumerable, Ownable {
     uint256 public whitelistMintCost = 0.01 ether;
     uint256 public whiteListMaxMintAmount = 2;
     mapping(address => uint256) public whiteListMintCount;
+    bytes32 public whiteListmerkleRoot;
 
     uint256 public maxSupply;
     bool public revealed = false;
@@ -25,7 +26,6 @@ contract NFT is ERC721Enumerable, Ownable {
     bool public publicMintStatus = false;
     bool public whitelistMintStatus = false;
 
-    bytes32 public whiteListmerkleRoot;
 
     constructor(
         string memory _name,
@@ -173,6 +173,10 @@ contract NFT is ERC721Enumerable, Ownable {
         whiteListmerkleRoot = _merkleRoot;
     }
 
+    function setMaxMintSupply(bytes32 _maxSupply) public onlyOwner {
+        maxSupply = _maxSupply;
+    }
+    
     function withdraw() public payable onlyOwner {
         (bool os, ) = payable(owner()).call{value: address(this).balance}("");
         require(os);
