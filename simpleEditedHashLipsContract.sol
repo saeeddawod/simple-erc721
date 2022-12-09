@@ -13,9 +13,12 @@ contract NFT is ERC721Enumerable, Ownable {
 
     string baseURI;
     string public baseExtension = ".json";
-    uint256 public cost = 0.05 ether;
+    uint256 public publicMintcost = 0.04 ether;
+    uint256 public whitelistMintCost = 0.01 ether;
+    uint256 public whiteListMaxMintAmount = 2;
+    mapping(address => uint256) public whiteListMintCount;
+
     uint256 public maxSupply;
-    uint256 public maxMintAmount;
     bool public revealed = false;
     string public notRevealedUri;
 
@@ -43,12 +46,10 @@ contract NFT is ERC721Enumerable, Ownable {
         uint256 supply = totalSupply();
         require(publicMintStatus);
         require(_mintAmount > 0);
-        require(_mintAmount <= maxMintAmount);
         require(supply + _mintAmount <= maxSupply);
         if (msg.sender != owner()) {
-            require(msg.value >= cost * _mintAmount);
+            require(msg.value >= publicMintcost * _mintAmount);
         }
-
         for (uint256 i = 1; i <= _mintAmount; i++) {
             _safeMint(msg.sender, supply + i);
         }
@@ -62,7 +63,7 @@ contract NFT is ERC721Enumerable, Ownable {
         uint256 supply = totalSupply();
         require(whitelistMintStatus);
         require(_mintAmount > 0);
-        require(_mintAmount <= maxMintAmount);
+        require(_mintAmount <= whiteListMaxMintAmount);
         require(supply + _mintAmount <= maxSupply);
         bytes32 leaf = keccak256(abi.encodePacked(_msgSender()));
         require(
@@ -70,8 +71,15 @@ contract NFT is ERC721Enumerable, Ownable {
             "Invalid proof!"
         );
 
+        require(
+            _mintAmount > 0 &&
+                whiteListMintCount[msg.sender] + _mintAmount <=
+                whiteListMaxMintAmount,
+            "Amount bigger than allowed max mint!"
+        );
+
         if (msg.sender != owner()) {
-            require(msg.value >= cost * _mintAmount);
+            require(msg.value >= whitelistMintCost * _mintAmount);
         }
 
         for (uint256 i = 1; i <= _mintAmount; i++) {
@@ -126,12 +134,16 @@ contract NFT is ERC721Enumerable, Ownable {
         revealed = true;
     }
 
-    function setCost(uint256 _newCost) public onlyOwner {
-        cost = _newCost;
+    function setPublicMintCost(uint256 _newCost) public onlyOwner {
+        publicMintcost = _newCost;
     }
 
-    function setmaxMintAmount(uint256 _newmaxMintAmount) public onlyOwner {
-        maxMintAmount = _newmaxMintAmount;
+    function setWhitelistMintCost(uint256 _newCost) public onlyOwner {
+        whitelistMintCost = _newCost;
+    }
+
+    function setmaxWhiteListMintAmount(uint256 _newmaxMintAmount) public onlyOwner {
+        whiteListMaxMintAmount = _newmaxMintAmount;
     }
 
     function setNotRevealedURI(string memory _notRevealedURI) public onlyOwner {
