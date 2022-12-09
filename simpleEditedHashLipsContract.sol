@@ -30,10 +30,12 @@ contract NFT is ERC721Enumerable, Ownable {
     constructor(
         string memory _name,
         string memory _symbol,
-        string memory _initNotRevealedUri
+        string memory _initNotRevealedUri,
+        uint256  _maxSupply
     ) ERC721(_name, _symbol) {
         setNotRevealedURI(_initNotRevealedUri);
         _safeMint(msg.sender, 1);
+        setMaxMintSupply(_maxSupply);
     }
 
     // internal
@@ -173,7 +175,7 @@ contract NFT is ERC721Enumerable, Ownable {
         whiteListmerkleRoot = _merkleRoot;
     }
 
-    function setMaxMintSupply(bytes32 _maxSupply) public onlyOwner {
+    function setMaxMintSupply(uint256 _maxSupply) public onlyOwner {
         maxSupply = _maxSupply;
     }
     
