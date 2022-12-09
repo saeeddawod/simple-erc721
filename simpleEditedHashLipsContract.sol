@@ -85,7 +85,7 @@ contract NFT is ERC721Enumerable, Ownable {
         }
 
         for (uint256 i = 1; i <= _mintAmount; i++) {
-            whiteListMintCount++
+            whiteListMintCount[msg.sender]++;
             _safeMint(msg.sender, supply + i);
         }
     }
